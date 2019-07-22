@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SVG web player for Moleskine Pen+ Ellipse</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    
+    <!-- import the webpage's javascript file -->
+    <script src="/svgplayer.js" defer></script>
+  </head>  
+  <body>
+    <h1>SVG web player for Moleskine Pen+ Ellipse</h1>
+    <p id="svgPlayerInterface">
+      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+      <button id="restartButton" onclick="restartAnimation()">Restart</button>
+      <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+    </p>
+    
+    <object svgplayer id="svg1" data="/page.svg" type="image/svg+xml" 
+            height="500px" width="400px" ></object>
+  </body>
+</html>
