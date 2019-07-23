@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SVG web player for reMarkable</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    
+    
+<script>
+var playerSVGpaused = false
+var namedCheckpoints = {'testing':9, 'box':11, 'ticked': 13, 'ok': 17}
+var stepTime = 100
+var opacityHide = 0.1
+var opacityShow = 1
+var scaleFactor = 10/10 // not needed for Surface since it has a viewBox
+var animationEnded = false
+// should be parametrable via URL    
+</script>
+
+  </head>  
+  <body>
+    <h1>SVG web player for reMarkable</h1>
+    <p id="svgPlayerInterface">
+      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+      <button id="restartButton" onclick="restartAnimation()">Restart</button>
+      <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+    </p>
+    
+
+
+<script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
+<script src="https://supereggbert.github.io/aframe-htmlembed-component/dist/build.js"></script>
+
+   <!-- <img src="/remarkable_lpen.svg" id="svg1" type="image/svg+xml" /> -->
+      
+      <!-- svg tag displays well but not parseable -->
+   <svg src="/remarkable_lpen.svg" id="svg1" type="image/svg+xml" />
+      
+      <!-- object tag does not displays but parseable -->
+
+  <a-scene cancel-forced-clean>
+    <a-sky color="lightblue"></a-sky>
+
+    <a-entity htmlembed position="0 1.6 -5">
+      <p>My HTML</p>
+      
+      <!-- img tag displays well but not parseable -->
+   <!-- <img src="/remarkable_lpen.svg" id="svg1" type="image/svg+xml" /> -->
+      
+      <!-- svg tag displays well but not parseable -->
+   <!-- <svg src="/remarkable_lpen.svg" id="svg1" type="image/svg+xml" />-->
+      
+      <!-- object tag does not displays but parseable -->
+      <!--<object data="/remarkable_lpen.svg" id="svg1" type="image/svg+xml"></object>-->
+      
+    </a-entity>
+
+    <a-image forced-texture-update src="#svg1" position="-2 1.6 -1"></a-image>
+  </a-scene>
+    
+    
+<script>
+function clearerSVG(){
+  var svg = document.querySelector('#svg1')
+  
+  console.log ( svg.contentDocument )
+  var doc = svg.getSVGDocument();
+  // problem https://stackoverflow.com/questions/8102528/how-do-you-access-the-contents-of-an-svg-file-in-an-img-element
+  doc.querySelectorAll("path").forEach( p => {
+    p.setAttribute("stroke", 'red');
+  });
+}  
+
+setTimeout(function(){ clearerSVG() }, 1000);
+  
+AFRAME.registerComponent('forced-clean', {  
+  init: function() {
+    setTimeout(function(){ clearerSVG() }, 1000);
+  }
+})
+  
+AFRAME.registerComponent('forced-texture-update', {  
+  init: function() {
+    this.apply()
+  },
+  update: function () {
+    this.apply()
+  },
+  apply: function(){
+			this.el.object3D.traverse( function(child) { 
+        if (child.material) console.log( child.material.needsUpdate ) 
+        // already set
+      } )
+  }
+})
+  
+AFRAME.registerComponent('delayed-src', {  
+  init: function() {
+    this.el.setAttribute('src', '')
+  }
+})
+  
+</script>    
+    
+  </body>
+</html>
