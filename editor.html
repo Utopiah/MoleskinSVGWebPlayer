@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/style.css">
+    
+<script>
+var playerSVGpaused = false
+var namedCheckpoints = {'svg player':3, 'surface':5, 'box':6, 'ticked':7, 'circled':12}
+var stepTime = 100
+var opacityHide = 0.1
+var opacityShow = 1
+var scaleFactor = 10/10 // not needed for Surface since it has a viewBox
+var animationEnded = false
+var totalPoints = 0
+// should be parametrable via URL    
+</script>
+
+    <script src="/svgplayer.js" defer></script>
+  </head>  
+  <body>
+    <h1>SVG web editor for Microsoft Surface</h1>
+    <p id="svgPlayerInterface">
+      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+      <button id="restartButton" onclick="restartAnimation()">Restart</button>
+      <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+    </p>
+    <div id="visualization"></div>
+    
+    <object svgplayer id="svg1" data="/surface_simplified.svg" type="image/svg+xml" 
+            height="600px" width="600px" ></object>
+
+<script type="text/javascript">
+// DOM element where the Timeline will be attached
+var container = document.getElementById('visualization');
+
+// Create a DataSet (allows two way data-binding)
+var items = new vis.DataSet([])
+  
+var svgparts
+
+if (document.querySelector('#svg1')) document.querySelector('#svg1').addEventListener("load", function() {
+  var doc = this.getSVGDocument();
+  if (doc.children[0].getAttribute('viewBox') && !doc.children[0].getAttribute('baseProfile')){ // Surface source
+    svgparts = [...doc.children[0].children[0].children]
+  } else { // Moleskine source
+    svgparts = doc.querySelectorAll("path")
+  }  
+
+  var idx = 0
+  var previous = 0
+  Object.keys(namedCheckpoints).forEach( (key,prop) => {    
+    items.add({id:idx++, content: key, start: previous, end:namedCheckpoints[key]} )
+    previous = namedCheckpoints[key]
+  })
+
+  setupTimeline()
+})
+  
+function setupTimeline(){
+  // Configuration for the Timeline
+  var options = {
+    start:0,
+    end: svgparts.length, // should be based on stepTime * SVG length
+    editable: true, 
+    width: '80%',
+    showCurrentTime: true,
+  };
+
+  // Create a Timeline
+  var timeline = new vis.Timeline(container, items, options);
+  timeline.addCustomTime(0)
+  timeline.setCustomTime(3)
+  
+  timeline.on('select', function (properties) {
+    console.log('selected items: ' + properties.items);
+  });
+  timeline.on('changed', function (properties) {
+    if (!timeline.getSelection().length) return
+    var item = items.get( timeline.getSelection()[0] )
+    
+    console.log('update namedCheckpoints instead and replay', item)
+  });
+}
+</script>
+
+    
+    
+  </body>
+</html>
