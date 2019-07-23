@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>SVG web player for Moleskine Pen+ Ellipse</title>
+    <title>SVG web player for Microsoft Surface</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,13 +9,15 @@
     <!-- import the webpage's stylesheet -->
     <link rel="stylesheet" href="/style.css">
     
+    
 <script>
 var playerSVGpaused = false
-var namedCheckpoints = {'cube':8, 'controller':32, 'position':56, 'interaction':86}
+var namedCheckpoints = {'stand':6, 'outside EP':32, 'movement':58, 
+                        'zoom':103, 'details on story': 160, 'vpn': 165}
 var stepTime = 100
 var opacityHide = 0.1
 var opacityShow = 1
-var scaleFactor = 4/10
+var scaleFactor = 10/10 // not needed for Surface since it has a viewBox
 var animationEnded = false
 // should be parametrable via URL    
 </script>
@@ -23,14 +25,14 @@ var animationEnded = false
     <script src="/svgplayer.js" defer></script>
   </head>  
   <body>
-    <h1>SVG web player for Moleskine Pen+ Ellipse</h1>
+    <h1>SVG web player for Microsoft Surface</h1>
     <p id="svgPlayerInterface">
       Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
       <button id="restartButton" onclick="restartAnimation()">Restart</button>
       <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
     </p>
     
-    <object svgplayer id="svg1" data="/page.svg" type="image/svg+xml" 
-            height="500px" width="400px" ></object>
+    <object svgplayer id="svg1" data="/surface.svg" type="image/svg+xml" 
+            height="600px" width="600px" ></object>
   </body>
 </html>

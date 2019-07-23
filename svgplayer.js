@@ -1,14 +1,5 @@
 // see README.md for TODO
 
-var playerSVGpaused = false
-var namedCheckpoints = {'cube':8, 'controller':32, 'position':56, 'interaction':86}
-var stepTime = 100
-var opacityHide = 0.1
-var opacityShow = 1
-var scaleFactor = 4/10
-var animationEnded = false
-// should be parametrable via URL
-
 var restartId = "#restartButton"
 var interfaceId = "#svgPlayerInterface"
 var playerButtonId = "#svgPlayerButton"
@@ -16,10 +7,20 @@ var svgId = "#svg1"
 // assuming target opacity, correct for Moleskin
 // should in fact index and restore for other use cases
 
+var svgparts
+
 document.querySelector(svgId).addEventListener("load", function() {
+  
   setupInterface()
 
   var doc = this.getSVGDocument();
+  if (doc.children[0].getAttribute('viewBox')){ // Surface source
+    svgparts = [...doc.children[0].children[0].children]
+  } else { // Moleskine source
+    svgparts = doc.querySelectorAll("path")
+    rescale() // needed since there is no viewBox defined in the SVG
+  }
+    
   // via https://stackoverflow.com/questions/4476526/do-i-use-img-object-or-embed-for-svg-files
   doc.addEventListener('click', function() {
     togglePause();
@@ -30,21 +31,23 @@ document.querySelector(svgId).addEventListener("load", function() {
     var target = window.location.hash.replace(/#/,'')
     jumpStroke( target )
   }
-  var paths = doc.querySelectorAll("path")
   function displayLatestPath(){
     if (playerSVGpaused) return
-    var firstNotFound = true
-    paths.forEach( (p, idx) => {
-      if (firstNotFound && p.getAttribute("stroke-opacity") == opacityHide ){
+    var firstNotFound = true    
+      
+    svgparts.forEach( (p, idx) => {
+      if (firstNotFound && p.getAttribute("opacity") == opacityHide ){
         if (document.querySelector('#respectCheckpoints').checked && checkpointPresent(idx) ){ 
           togglePause()
         }
-        p.setAttribute("stroke-opacity", opacityShow)
+        p.setAttribute("opacity", opacityShow)
         firstNotFound = false
-        checkEnd(idx, paths.length-1)
+        checkEnd(idx, svgparts.length-1)
       }
     });
+
   }
+  
   setInterval( displayLatestPath, stepTime )
   
   document.addEventListener("keydown", function(event) {
@@ -76,22 +79,26 @@ function jumpStroke(targetStroke){
   location.hash = targetStroke;
   pauseAnimation()
   lowerOpacitySVG()
-  var doc = document.querySelector(svgId).getSVGDocument();
-  var paths = doc.querySelectorAll("path")
-  paths.forEach( (p, idx) => {
-      if (idx <= namedCheckpoints[targetStroke] && p.getAttribute("stroke-opacity") == opacityHide ){
-        p.setAttribute("stroke-opacity", opacityShow)
-        checkEnd(idx, paths.length-1)
-      }
-    });
+  
+  svgparts.forEach( (p, idx) => {
+    if (idx <= namedCheckpoints[targetStroke] && p.getAttribute("opacity") == opacityHide ){
+      p.setAttribute("opacity", opacityShow)
+      checkEnd(idx, svgparts.length-1)
+    }
+  });
 }
 
 function lowerOpacitySVG(){
-  var doc = document.querySelector(svgId).getSVGDocument();
-  doc.querySelectorAll("path").forEach( p => {
+  svgparts.forEach( p => {
+    //p.setAttribute("transform", "scale("+scaleFactor+")")
+    p.setAttribute("opacity", opacityHide);
+  });   
+}
+
+function rescale(){
+  svgparts.forEach( p => {
     p.setAttribute("transform", "scale("+scaleFactor+")")
-    p.setAttribute("stroke-opacity", opacityHide);
-  });
+  });   
 }
 
 function setupInterface(){
