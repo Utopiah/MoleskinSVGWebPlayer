@@ -9,12 +9,13 @@ var svgId = "#svg1"
 
 var svgparts
 
-document.querySelector(svgId).addEventListener("load", function() {
+if (document.querySelector(svgId)) document.querySelector(svgId).addEventListener("load", function() {
   
   setupInterface()
 
   var doc = this.getSVGDocument();
-  if (doc.children[0].getAttribute('viewBox')){ // Surface source
+  console.log()
+  if (doc.children[0].getAttribute('viewBox') && !doc.children[0].getAttribute('baseProfile')){ // Surface source
     svgparts = [...doc.children[0].children[0].children]
   } else { // Moleskine source
     svgparts = doc.querySelectorAll("path")

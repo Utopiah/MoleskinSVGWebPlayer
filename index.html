@@ -1,36 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>SVG web player for Moleskine Pen+ Ellipse</title>
+    <title>SVG web player for hand drawing devices</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- import the webpage's stylesheet -->
     <link rel="stylesheet" href="/style.css">
-    
-<script>
-var playerSVGpaused = false
-var namedCheckpoints = {'cube':8, 'controller':32, 'position':56, 'interaction':86}
-var stepTime = 100
-var opacityHide = 0.1
-var opacityShow = 1
-var scaleFactor = 4/10
-var animationEnded = false
-// should be parametrable via URL    
-</script>
-
-    <script src="/svgplayer.js" defer></script>
   </head>  
   <body>
-    <h1>SVG web player for Moleskine Pen+ Ellipse</h1>
-    <p id="svgPlayerInterface">
-      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
-      <button id="restartButton" onclick="restartAnimation()">Restart</button>
-      <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+    <h1>SVG web player for hand drawing devices</h1>
+    <p>Drawing helps to think about complex system. 
+      As we draw we find link and become able to summarize.
+      Unfortunately the final drawing is often incomprehensible for others because the explanations that was done with the drawing is gone. 
+      As importantly the chronology of the drawing is also lost.
+      The goal of thise player is to enable replaying of chronology and efficient sharing.
     </p>
-    
-    <object svgplayer id="svg1" data="/page.svg" type="image/svg+xml" 
-            height="500px" width="400px" ></object>
+    <p>The only supported devices are listed here :</p>
+    <ul>
+      <li><a href="moleskine.html">Moleskine</a></li>
+      <li><a href="surface_simplified.html">Surface Hub</a> (some rainbow coloring lost)</li>
+      <li><a href="remarkable.html">reMarkable</a> (not pencil style)</li>
+    </ul>
+    <p>Code <a href="https://github.com/Utopiah/MoleskinSVGWebPlayer">repository</a> (MIT License)</p>
   </body>
 </html>
