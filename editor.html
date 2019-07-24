@@ -25,7 +25,11 @@ var totalPoints = 0
       Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
       <button id="restartButton" onclick="restartAnimation()">Restart</button>
       <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+      <div id="checkpoints"></div>
     </p>
+  <p>
+    Warning: the timeline supports start and end for every checkpoints. The player still assumes only starts checkpoint and remains sequential. It starts from nothing to checkpoint A then B, etc. The player will be fixed to support this more flexible way.
+  </p>
     <div id="visualization"></div>
     
     <object svgplayer id="svg1" data="/surface_simplified.svg" type="image/svg+xml" 
@@ -39,6 +43,7 @@ var container = document.getElementById('visualization');
 var items = new vis.DataSet([])
   
 var svgparts
+var timeline
 
 if (document.querySelector('#svg1')) document.querySelector('#svg1').addEventListener("load", function() {
   var doc = this.getSVGDocument();
@@ -66,21 +71,26 @@ function setupTimeline(){
     editable: true, 
     width: '80%',
     showCurrentTime: true,
+    stack: false
   };
 
   // Create a Timeline
-  var timeline = new vis.Timeline(container, items, options);
+  timeline = new vis.Timeline(container, items, options);
   timeline.addCustomTime(0)
-  timeline.setCustomTime(3)
   
   timeline.on('select', function (properties) {
-    console.log('selected items: ' + properties.items);
+    if (!timeline.getSelection().length) return
+    var item = items.get( timeline.getSelection()[0] )    
+    segmentStroke(item.start, item.end)
   });
   timeline.on('changed', function (properties) {
     if (!timeline.getSelection().length) return
-    var item = items.get( timeline.getSelection()[0] )
-    
-    console.log('update namedCheckpoints instead and replay', item)
+    var item = items.get( timeline.getSelection()[0] )    
+    //if ( item.start.getTime() < 0 || item.end.getTime() > svgparts.length) return
+    segmentStroke( Number(item.start) , Number(item.end))
+    setupInterface()
+    // should rely on items
+    // namedCheckpoints only support start, not end
   });
 }
 </script>

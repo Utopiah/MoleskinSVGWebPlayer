@@ -3,18 +3,20 @@
 var restartId = "#restartButton"
 var interfaceId = "#svgPlayerInterface"
 var playerButtonId = "#svgPlayerButton"
+var checkpointsId = "#checkpoints"
 var svgId = "#svg1"
 // assuming target opacity, correct for Moleskin
 // should in fact index and restore for other use cases
 
 var svgparts
+var visualTimelineAvailable = false
+if (typeof vis !== "undefined") visualTimelineAvailable = true
 
 if (document.querySelector(svgId)) document.querySelector(svgId).addEventListener("load", function() {
   
   setupInterface()
 
   var doc = this.getSVGDocument();
-  console.log()
   if (doc.children[0].getAttribute('viewBox') && !doc.children[0].getAttribute('baseProfile')){ // Surface source
     svgparts = [...doc.children[0].children[0].children]
   } else { // Moleskine source
@@ -27,6 +29,7 @@ if (document.querySelector(svgId)) document.querySelector(svgId).addEventListene
     togglePause();
   });
   lowerOpacitySVG()
+  if (visualTimelineAvailable) timeline.setCustomTime(0)
 
   if (window.location.hash) { 
     var target = window.location.hash.replace(/#/,'')
@@ -34,8 +37,8 @@ if (document.querySelector(svgId)) document.querySelector(svgId).addEventListene
   }
   function displayLatestPath(){
     if (playerSVGpaused) return
-    var firstNotFound = true    
-      
+    var firstNotFound = true
+    
     svgparts.forEach( (p, idx) => {
       if (firstNotFound && p.getAttribute("opacity") == opacityHide ){
         if (document.querySelector('#respectCheckpoints').checked && checkpointPresent(idx) ){ 
@@ -43,7 +46,9 @@ if (document.querySelector(svgId)) document.querySelector(svgId).addEventListene
         }
         p.setAttribute("opacity", opacityShow)
         firstNotFound = false
+        if (visualTimelineAvailable) timeline.setCustomTime(idx)
         checkEnd(idx, svgparts.length-1)
+    
       }
     });
 
@@ -69,6 +74,7 @@ function checkEnd(idx, max){
       animationEnded = true
       document.querySelector(playerButtonId).disabled = true
       pauseAnimation() 
+      if (visualTimelineAvailable) timeline.setCustomTime(max+1)
     } else {
       animationEnded = false
       document.querySelector(playerButtonId).disabled = false
@@ -84,6 +90,20 @@ function jumpStroke(targetStroke){
   svgparts.forEach( (p, idx) => {
     if (idx <= namedCheckpoints[targetStroke] && p.getAttribute("opacity") == opacityHide ){
       p.setAttribute("opacity", opacityShow)
+      if (visualTimelineAvailable) timeline.setCustomTime(idx)
+      checkEnd(idx, svgparts.length-1)
+    }
+  });
+}
+
+function segmentStroke(start, end){
+  pauseAnimation()
+  lowerOpacitySVG()
+  
+  svgparts.forEach( (p, idx) => {
+    if (idx > start && idx <= end && p.getAttribute("opacity") == opacityHide ){
+      p.setAttribute("opacity", opacityShow)
+      if (visualTimelineAvailable) timeline.setCustomTime(idx)
       checkEnd(idx, svgparts.length-1)
     }
   });
@@ -103,24 +123,25 @@ function rescale(){
 }
 
 function setupInterface(){
-  var interfaceEl = document.querySelector(interfaceId)
+  var checkpointsEl = document.querySelector(checkpointsId)
+  checkpointsEl.innerHTML = ''
   var spanEl = document.createElement('span')
   spanEl.innerText = '(at strokes '
-  interfaceEl.appendChild(spanEl)
+  checkpointsEl.appendChild(spanEl)
   Object.keys(namedCheckpoints).forEach( (key,prop) => {
     var chkptEl = document.createElement('span')
     chkptEl.innerText = namedCheckpoints[key] + ':' + key
     chkptEl.style.textDecoration = 'underline'
     chkptEl.style.marginRight = '5px'
     chkptEl.setAttribute('href', key)
-    interfaceEl.appendChild(chkptEl)
+    checkpointsEl.appendChild(chkptEl)
     chkptEl.addEventListener("click", function(){
       jumpStroke( this.getAttribute('href') )
     }, false);
   })
   var spanEl = document.createElement('span')
   spanEl.innerText = ')'
-  interfaceEl.appendChild(spanEl)
+  checkpointsEl.appendChild(spanEl)
 }
 
 function togglePause(){
@@ -140,6 +161,7 @@ function pauseAnimation(){
 }
 
 function restartAnimation(){
+  if (visualTimelineAvailable) timeline.setCustomTime(0)
   lowerOpacitySVG()
   pauseAnimation()
   document.querySelector(playerButtonId).disabled = false
