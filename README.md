@@ -10,5 +10,4 @@ Repository : https://github.com/Utopiah/MoleskinSVGWebPlayer
   - scaling doesnt work but object width/height does
   - opacity doesn't work
 - synced with video (cf ML tutorial with Yannael https://glitch.com/edit/#!/ml-vr?path=videoannotations.html:1:0 )  
-- timeline to select only parts https://aframe-animation-timeline.glitch.me/
 - 3D/XR support cf https://glitch.com/edit/#!/hand-drawn-vr

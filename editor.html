@@ -8,6 +8,18 @@
 <script>
 var playerSVGpaused = false
 var namedCheckpoints = {'svg player':3, 'surface':5, 'box':6, 'ticked':7, 'circled':12}
+var segments = {'svg player':  {start:0, end: 3},
+                'surface':     {start:0, end: 5},
+                'box':         {start:0, end: 6},
+                'ticked':      {start:0, end: 7},
+                'circled':     {start:0, end:12}}
+var segmentsNonAdditive ={
+                'svg player':  {start:0, end: 3},
+                'surface':     {start:3, end: 5},
+                'box':         {start:5, end: 6},
+                'ticked':      {start:6, end: 7},
+                'circled':     {start:7, end:12}}
+segments = segmentsNonAdditive // for faster tests
 var stepTime = 100
 var opacityHide = 0.1
 var opacityShow = 1
@@ -25,7 +37,15 @@ var totalPoints = 0
       Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
       <button id="restartButton" onclick="restartAnimation()">Restart</button>
       <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+      <input type="checkbox" notchecked id="additive"><label> Additive</label>
+      <div id="checkpoints"></div>
     </p>
+    <p id="segmentEditor" style="visibility:hidden">
+      <button id="segmentApplyAction" onclick="segmentApplyAction()">apply action (e.g. decrease opacity)</button>
+    </p>
+  <p>
+    Warning: the timeline supports start and end for every checkpoints. The player still assumes only starts checkpoint and remains sequential. It starts from nothing to checkpoint A then B, etc. The player will be fixed to support this more flexible way.
+  </p>
     <div id="visualization"></div>
     
     <object svgplayer id="svg1" data="/surface_simplified.svg" type="image/svg+xml" 
@@ -37,11 +57,25 @@ var container = document.getElementById('visualization');
 
 // Create a DataSet (allows two way data-binding)
 var items = new vis.DataSet([])
-  
+
 var svgparts
+var timeline
+var lastSelectedSegment
+
+function segmentApplyAction(){
+  svgparts.forEach( (p, idx) => {
+    if (idx > lastSelectedSegment.start && idx <= lastSelectedSegment.end){
+      var w = p.getAttribute("opacity")
+      p.setAttribute("opacity", Number(w) - 0.1)
+      // warning : not saved for the chronological animation as we already play with opacity
+      // this should be another property. 
+      // Also the modified SVG should have an option to be saved at least locally then re-uploaded.
+    }
+  });
+}
 
 if (document.querySelector('#svg1')) document.querySelector('#svg1').addEventListener("load", function() {
-  var doc = this.getSVGDocument();
+  doc = this.getSVGDocument();
   if (doc.children[0].getAttribute('viewBox') && !doc.children[0].getAttribute('baseProfile')){ // Surface source
     svgparts = [...doc.children[0].children[0].children]
   } else { // Moleskine source
@@ -49,10 +83,8 @@ if (document.querySelector('#svg1')) document.querySelector('#svg1').addEventLis
   }  
 
   var idx = 0
-  var previous = 0
-  Object.keys(namedCheckpoints).forEach( (key,prop) => {    
-    items.add({id:idx++, content: key, start: previous, end:namedCheckpoints[key]} )
-    previous = namedCheckpoints[key]
+  Object.keys(segments).forEach( (key,prop) => {    
+    items.add({id:idx++, content: key, start: segments[key].start, end:segments[key].end} )
   })
 
   setupTimeline()
@@ -62,25 +94,38 @@ function setupTimeline(){
   // Configuration for the Timeline
   var options = {
     start:0,
-    end: svgparts.length, // should be based on stepTime * SVG length
+    end: svgparts.length,
     editable: true, 
     width: '80%',
     showCurrentTime: true,
+    //stack: false,
+    onRemove: function (item, callback) {
+      items.remove(item)
+      delete segments[item.content]
+      setupInterface()
+    }
   };
 
   // Create a Timeline
-  var timeline = new vis.Timeline(container, items, options);
+  timeline = new vis.Timeline(container, items, options);
   timeline.addCustomTime(0)
-  timeline.setCustomTime(3)
   
   timeline.on('select', function (properties) {
-    console.log('selected items: ' + properties.items);
+    if (!timeline.getSelection().length) return
+    var item = items.get( timeline.getSelection()[0] )    
+    segmentStroke(item.start, item.end)
+    document.querySelector('#segmentEditor').style.visibility = 'visible'
+    lastSelectedSegment = item
   });
   timeline.on('changed', function (properties) {
     if (!timeline.getSelection().length) return
-    var item = items.get( timeline.getSelection()[0] )
-    
-    console.log('update namedCheckpoints instead and replay', item)
+    var item = items.get( timeline.getSelection()[0] )    
+    segmentStroke( Number(item.start) , Number(item.end))
+    setupInterface()
+    items.forEach( i => { 
+      segments[i.content].start = Number(i.start) 
+      segments[i.content].end = Number(i.end) 
+    } )
   });
 }
 </script>
