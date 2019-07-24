@@ -1,3 +1,4 @@
+/* globals playerSVGpaused namedCheckpoints segments stepTime opacityHide opacityShow scaleFactor animationEnded totalPoints timeline */
 // see README.md for TODO
 
 var restartId = "#restartButton"
@@ -10,6 +11,8 @@ var svgId = "#svg1"
 
 var svgparts
 var visualTimelineAvailable = false
+var lastStrokeTested = 0
+
 if (typeof vis !== "undefined") visualTimelineAvailable = true
 
 if (document.querySelector(svgId)) document.querySelector(svgId).addEventListener("load", function() {
@@ -37,20 +40,23 @@ if (document.querySelector(svgId)) document.querySelector(svgId).addEventListene
   }
   function displayLatestPath(){
     if (playerSVGpaused) return
-    var firstNotFound = true
     
     svgparts.forEach( (p, idx) => {
-      if (firstNotFound && p.getAttribute("opacity") == opacityHide ){
-        if (document.querySelector('#respectCheckpoints').checked && checkpointPresent(idx) ){ 
-          togglePause()
+        if (idx > lastStrokeTested) return
+      
+        if (visualTimelineAvailable && !document.querySelector('#additive').checked) {
+          var segment = inSegment(idx)
+          if (segment) lowerOpacitySVGuntilStroke(segments[segment].start)
         }
         p.setAttribute("opacity", opacityShow)
-        firstNotFound = false
+        if (document.querySelector('#respectCheckpoints').checked && checkpointPresentNext(idx, lastStrokeTested) ){ 
+          togglePause()
+        }
         if (visualTimelineAvailable) timeline.setCustomTime(idx)
         checkEnd(idx, svgparts.length-1)
-    
-      }
+
     });
+    lastStrokeTested++
 
   }
   
@@ -60,6 +66,23 @@ if (document.querySelector(svgId)) document.querySelector(svgId).addEventListene
     if (event.which == 32) togglePause();
   })
 });
+
+
+function inSegment(idx){
+  var present = false
+  Object.keys(segments).forEach( (key,prop) => {
+    if (idx >= segments[key].start && idx < segments[key].end) present = key
+  })
+  return present
+}
+
+function checkpointPresentNext(idx, lastStrokeTested){
+  var present = false
+  Object.keys(namedCheckpoints).forEach( (key,prop) => {
+    if (idx == namedCheckpoints[key] && idx >= lastStrokeTested) present = true
+  })
+  return present
+}
 
 function checkpointPresent(idx){
   var present = false
@@ -109,9 +132,26 @@ function segmentStroke(start, end){
   });
 }
 
+function addSegmentStroke(start, end){
+  pauseAnimation()
+  
+  svgparts.forEach( (p, idx) => {
+    if (idx > start && idx <= end && p.getAttribute("opacity") == opacityHide ){
+      p.setAttribute("opacity", opacityShow)
+      if (visualTimelineAvailable) timeline.setCustomTime(idx)
+      checkEnd(idx, svgparts.length-1)
+    }
+  });
+}
+
+function lowerOpacitySVGuntilStroke(max){
+  svgparts.forEach( (p, idx) => {
+    if (idx <= max) p.setAttribute("opacity", opacityHide);
+  });   
+}
+
 function lowerOpacitySVG(){
   svgparts.forEach( p => {
-    //p.setAttribute("transform", "scale("+scaleFactor+")")
     p.setAttribute("opacity", opacityHide);
   });   
 }
@@ -161,6 +201,7 @@ function pauseAnimation(){
 }
 
 function restartAnimation(){
+  lastStrokeTested = 0
   if (visualTimelineAvailable) timeline.setCustomTime(0)
   lowerOpacitySVG()
   pauseAnimation()
