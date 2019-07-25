@@ -22,13 +22,15 @@ var animationEnded = false
 
 // video annotation setup
 var videoAnnotation = {
-   video: "https://fabien.benetou.fr/pub/home/fabien-DOMbasics.mp4",
+   video: "https://fabien.benetou.fr/pub/home/svgplayersyncexample.mp4",  
+   audio: "https://fabien.benetou.fr/pub/home/svgplayersyncexample.mp3",
+  // not tested yet, relying only on video for now
    id: "videoannotation",
-   timecodes: [{timecode: 1, checkpoint:'svg player', URL:"https://github.com/googlecreativelab/teachable-machine-boilerplate"},
-               {timecode: 5, checkpoint:'surface', URL:"https://www.typescriptlang.org/"},
-               {timecode: 10, checkpoint:'box', URL:"https://developers.google.com/web/tools/chrome-devtools/console/"},
-               {timecode: 20, checkpoint:'ticked', URL:"https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector"},
-               {timecode: 30, checkpoint:'circled', URL:""},
+   timecodes: [{timecode: 1, checkpoint:'svg player', URL:"https://svg-player.glitch.me/"},
+               {timecode: 25, checkpoint:'surface', URL:"https://en.wikipedia.org/wiki/Surface_Hub"},
+               {timecode: 48, checkpoint:'box', URL:"☐"},
+               {timecode: 51, checkpoint:'ticked', URL:"☑️"},
+               {timecode: 55, checkpoint:'circled', URL:""},
            ]
  }
 </script>
@@ -38,7 +40,7 @@ var videoAnnotation = {
   <body>
     <h1>SVG web player for Microsoft Surface with media synchronization</h1>
     <p id="svgPlayerInterface">
-      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+      Animation: <button id="svgPlayerButton" style="visibility:hidden" onclick="togglePause()">Pause</button>
       <button id="restartButton" onclick="restartAnimation()">Restart</button>
       <br/><input type="checkbox" id="respectCheckpoints"><label> Respect checkpoints</label>
       <div id="checkpoints"></div>

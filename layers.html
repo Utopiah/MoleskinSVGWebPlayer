@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SVG web player for Microsoft Surface</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    
+    
+<script>
+var playerSVGpaused = false
+var namedCheckpoints = {'svg player':3, 'surface':5, 'box':6, 'ticked':7, 'circled':12}
+var stepTime = 100
+var opacityHide = 0.1
+var opacityShow = 1
+var scaleFactor = 10/10 // not needed for Surface since it has a viewBox
+var animationEnded = false
+// should be parametrable via URL    
+</script>
+
+    <script src="/svgplayer.js" defer></script>
+  </head>  
+  <body>
+    <h1>SVG web player for Microsoft Surface</h1>
+    <p id="svgPlayerInterface">
+      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+      <button id="restartButton" onclick="restartAnimation()">Restart</button>
+      <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+      <div id="checkpoints"></div>
+    </p>
+    
+  <div>    
+    <object svgplayer id="svg1" data="/surface_simplified.svg" type="image/svg+xml" 
+            style="position: absolute;left: 10px;top: 50px;z-index: 2;"
+            height="600px" width="600px" ></object>
+    <object svgplayer id="svg2" data="/surface.svg" type="image/svg+xml" 
+            style="position: absolute;left: 10px;top: 50px;z-index: 1;"
+            height="600px" width="600px" ></object>
+  </div>
+
+  </body>
+</html>

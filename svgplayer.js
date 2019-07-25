@@ -17,6 +17,11 @@ var lastStrokeTested = 0
 if (typeof vis !== "undefined") visualTimelineAvailable = true
 if (typeof videoAnnotation !== "undefined") videoAnnotationAvailable = true
 
+var currentUrl = new URLSearchParams(window.location.search)
+var url = currentUrl.get('url')
+console.log(url)
+if (url) document.querySelector(svgId).data = url
+
 if (document.querySelector(svgId)) document.querySelector(svgId).addEventListener("load", function() {
   
   setupInterface()
@@ -193,10 +198,13 @@ function setupInterface(){
 
 function togglePause(){
   var element = document.querySelector(playerButtonId)
-  if (playerSVGpaused)
+  if (playerSVGpaused){
     element.innerText = "Pause"
-  else
+    //if (videoAnnotationAvailable) document.querySelector('#'+videoAnnotation.id).pause()
+  } else {
     element.innerText = "Play"
+    //if (videoAnnotationAvailable) document.querySelector('#'+videoAnnotation.id).pause()
+  }
   playerSVGpaused = !playerSVGpaused
 }
 
