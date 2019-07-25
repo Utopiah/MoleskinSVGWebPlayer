@@ -198,10 +198,13 @@ function setupInterface(){
 
 function togglePause(){
   var element = document.querySelector(playerButtonId)
-  if (playerSVGpaused)
+  if (playerSVGpaused){
     element.innerText = "Pause"
-  else
+    //if (videoAnnotationAvailable) document.querySelector('#'+videoAnnotation.id).pause()
+  } else {
     element.innerText = "Play"
+    //if (videoAnnotationAvailable) document.querySelector('#'+videoAnnotation.id).pause()
+  }
   playerSVGpaused = !playerSVGpaused
 }
 
