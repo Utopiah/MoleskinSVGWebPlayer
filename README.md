@@ -4,10 +4,9 @@ Repository : https://github.com/Utopiah/MoleskinSVGWebPlayer
 
 # todo
 - parameters via URL, anchor target for checkpoints, a la reveal.js
+  - especially URL as it would allow anybody to use the tool without having to repliace the Glitch (but then must be stable and compatible)
 - play bar supporting seeking (0 being first stroke, 100 last)
 - refactor to proper web component
-- support Surface export
-  - scaling doesnt work but object width/height does
-  - opacity doesn't work
 - synced with video (cf ML tutorial with Yannael https://glitch.com/edit/#!/ml-vr?path=videoannotations.html:1:0 )  
-- 3D/XR support cf https://glitch.com/edit/#!/hand-drawn-vr
+- social synced https://glitch.com/edit/#!/localvideo-webxr-coplay?path=public/js/scripts.js:12:0 especially for presentations
+- 3D/XR support, failed attempt in 3d.html
