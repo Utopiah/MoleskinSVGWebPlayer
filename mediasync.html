@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SVG web player for Microsoft Surface with media synchronization</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    
+    
+<script>
+var playerSVGpaused = false
+var namedCheckpoints = {'svg player':3, 'surface':5, 'box':6, 'ticked':7, 'circled':12}
+var stepTime = 100
+var opacityHide = 0.1
+var opacityShow = 1
+var scaleFactor = 10/10 // not needed for Surface since it has a viewBox
+var animationEnded = false
+// should be parametrable via URL    
+
+// video annotation setup
+var videoAnnotation = {
+   video: "https://fabien.benetou.fr/pub/home/fabien-DOMbasics.mp4",
+   id: "videoannotation",
+   timecodes: [{timecode: 1, checkpoint:'svg player', URL:"https://github.com/googlecreativelab/teachable-machine-boilerplate"},
+               {timecode: 5, checkpoint:'surface', URL:"https://www.typescriptlang.org/"},
+               {timecode: 10, checkpoint:'box', URL:"https://developers.google.com/web/tools/chrome-devtools/console/"},
+               {timecode: 20, checkpoint:'ticked', URL:"https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector"},
+               {timecode: 30, checkpoint:'circled', URL:""},
+           ]
+ }
+</script>
+
+    <script src="/svgplayer.js" defer></script>
+  </head>  
+  <body>
+    <h1>SVG web player for Microsoft Surface with media synchronization</h1>
+    <p id="svgPlayerInterface">
+      Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+      <button id="restartButton" onclick="restartAnimation()">Restart</button>
+      <br/><input type="checkbox" id="respectCheckpoints"><label> Respect checkpoints</label>
+      <div id="checkpoints"></div>
+    </p>
+    
+    <object svgplayer id="svg1" data="/surface_simplified.svg" type="image/svg+xml" 
+            height="600px" width="600px" ></object>
+  </body>
+
+<script>
+
+// video annotation interface
+var urlholder = document.createElement("span");
+urlholder.id = "urlholder";
+var annotationholder = document.createElement("div");
+Object.assign( annotationholder.style, { width: "30vw", height:"40vh", position: "fixed", top:"0px", right:"0px", zIndex: 999 });
+document.body.appendChild(annotationholder);
+var video = document.createElement("video");
+video.id = videoAnnotation.id;
+Object.assign( video.style, { width: "30vw", height:"40vh" }) 
+annotationholder.appendChild(video);
+annotationholder.appendChild(urlholder);
+video.src = videoAnnotation.video;
+video.controls = true;
+  
+videoAnnotation.timecodes.forEach( (tc) => {
+  // do nothing for now, could be interesting for 2-way sync e.g. mouse over highlight segment then can sync back video
+  // but very complex for a use case that is not obvious, especially with existing checkpoint already navigable
+})
+  
+function adjustAnimationFromVideoAnnotations(){
+  videoAnnotation.timecodes.forEach( (tc) => {
+    if ( (video.currentTime >= tc.timecode - deltaTime) && (video.currentTime <= tc.timecode + deltaTime) ){
+      document.querySelector('#urlholder').innerHTML = "<a href='"+tc.URL+"' target='_blank'>"+tc.URL+"</a>"
+      target = ""
+      if (window.location.hash) { 
+        target = window.location.hash.replace(/#/,'')
+      }
+      if (target != encodeURI(tc.checkpoint)) jumpStroke(tc.checkpoint)
+    }
+  })
+}
+
+var deltaTime = 1
+var target = ""
+setInterval(adjustAnimationFromVideoAnnotations , 1000);
+video.addEventListener("seeking", adjustAnimationFromVideoAnnotations);
+
+
+</script>
+</html>

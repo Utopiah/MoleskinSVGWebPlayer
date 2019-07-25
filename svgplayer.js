@@ -1,4 +1,4 @@
-/* globals playerSVGpaused namedCheckpoints segments stepTime opacityHide opacityShow scaleFactor animationEnded totalPoints timeline */
+/* globals playerSVGpaused namedCheckpoints segments stepTime opacityHide opacityShow scaleFactor animationEnded totalPoints timeline videoAnnotation */
 // see README.md for TODO
 
 var restartId = "#restartButton"
@@ -11,9 +11,11 @@ var svgId = "#svg1"
 
 var svgparts
 var visualTimelineAvailable = false
+var videoAnnotationAvailable = false
 var lastStrokeTested = 0
 
 if (typeof vis !== "undefined") visualTimelineAvailable = true
+if (typeof videoAnnotation !== "undefined") videoAnnotationAvailable = true
 
 if (document.querySelector(svgId)) document.querySelector(svgId).addEventListener("load", function() {
   
@@ -117,6 +119,11 @@ function jumpStroke(targetStroke){
       checkEnd(idx, svgparts.length-1)
     }
   });
+  
+  if (videoAnnotationAvailable){
+    var targetTime = videoAnnotation.timecodes.filter( (e) => { return (e.checkpoint == targetStroke) })[0]
+    if (targetTime) document.querySelector('#'+videoAnnotation.id).currentTime = targetTime.timecode
+  }
 }
 
 function segmentStroke(start, end){
@@ -203,6 +210,7 @@ function pauseAnimation(){
 function restartAnimation(){
   lastStrokeTested = 0
   if (visualTimelineAvailable) timeline.setCustomTime(0)
+  if (videoAnnotationAvailable) document.querySelector('#'+videoAnnotation.id).currentTime = 0
   lowerOpacitySVG()
   pauseAnimation()
   document.querySelector(playerButtonId).disabled = false
