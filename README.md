@@ -3,10 +3,16 @@
 Repository : https://github.com/Utopiah/MoleskinSVGWebPlayer
 
 # todo
-- parameters via URL, anchor target for checkpoints, a la reveal.js
-  - especially URL as it would allow anybody to use the tool without having to repliace the Glitch (but then must be stable and compatible)
+- add matching video and audio examples for mediasync
+- properly merge editor and mediasync (both work independantly but with the same code i.e `svgplayer.js`)
+- parameters via URL (beyond just target svg)
 - play bar supporting seeking (0 being first stroke, 100 last)
 - refactor to proper web component
-- synced with video (cf ML tutorial with Yannael https://glitch.com/edit/#!/ml-vr?path=videoannotations.html:1:0 )  
-- social synced https://glitch.com/edit/#!/localvideo-webxr-coplay?path=public/js/scripts.js:12:0 especially for presentations
+- social synced [cf own 360 social player](https://glitch.com/edit/#!/localvideo-webxr-coplay), especially for presentations
 - 3D/XR support, failed attempt in 3d.html
+
+# useful resources
+
+- for presistence
+  - just via the browser [Saving SVG as a file](https://stackoverflow.com/questions/2483919/how-to-save-svg-canvas-to-local-filesystem)
+  - with server-side [JSON CMS](https://glitch.com/edit/#!/cms-json)
