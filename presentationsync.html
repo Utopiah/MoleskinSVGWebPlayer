@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SVG web player with presentation synchronization</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/presentation.css">
+    
+<script>
+var playerSVGpaused = false
+var namedCheckpoints = {'svg player':3, 'surface':5, 'box':6, 'ticked':7, 'circled':12}
+var stepTime = 100
+var opacityHide = 0.1
+var opacityShow = 1
+var scaleFactor = 10/10 // not needed for Surface since it has a viewBox
+var animationEnded = false
+// should be parametrable via URL   
+</script>
+
+    <script src="/svgplayer.js" defer></script>
+  </head>  
+  <body>  
+    <main>
+      <h1>SVG web player with presentation synchronization</h1>
+      <p id="svgPlayerInterface">
+        Animation: <button id="svgPlayerButton" onclick="togglePause()">Pause</button>
+        <button id="restartButton" onclick="restartAnimation()">Restart</button>
+        <br/><input type="checkbox" checked id="respectCheckpoints"><label> Respect checkpoints</label>
+        <div id="checkpoints"></div>
+      </p>
+    
+    <div class="words">
+
+        <div class="explanations">
+          <h3>Lessons learned</h3>
+          <ul id="learnedSoFar"></ul>
+        </div>      
+
+        <div class="snap-container">
+          
+          <div class="explanations">
+          <p>SVG Player</p>
+          <p>The SVG Player chronologically replayes the strokes from an SVG file.</p>
+            <div class="lesson">SVG  ❤️ </div>
+          </div>
+          
+          <div class="explanations">
+            <p>SVG is being used as an export format by multiple devices including the Microsoft Surface Hub.</p>
+            <div class="lesson">SVG is compatible</div>
+          </div>
+
+          <div class="explanations">
+            <p>This allows us to draw feely rather than just put our thoughts in a box.</p>
+            <div class="lesson">Freedom to draw, thus to think.</div>
+          </div>
+
+          <div class="explanations">
+            <p>But also to efficiently share key ideas.</p>
+            <div class="lesson">Efficient sharing</div>
+          </div>
+
+          <div class="explanations">
+            <p>And all that is well supported on the web!</p>
+            <div class="lesson">Great web support</div>
+          </div>
+
+        </div>
+    </div>
+
+    <div class="webvr">      
+      <object svgplayer id="svg1" data="/surface_simplified.svg" type="image/svg+xml" 
+              height="600px" width="600px" ></object>
+    </div>
+  </main>
+
+  </body>
+
+<script>
+function addLesson(lessonText){
+  var lesson =  document.createElement("li")
+  lesson.innerHTML = lessonText
+  lessonsLearned.appendChild( lesson )
+  // ideally movement from the explanations to the lessons learned
+  // cf eg https://stackoverflow.com/a/26042686/1442164
+  // https://developers.google.com/web/updates/2018/07/css-scroll-snap
+}
+var lessonsLearned = document.querySelector("#learnedSoFar")  
+var lessonsAdded = []
+var container = document.querySelector(".snap-container")
+container.addEventListener('scroll', function(e){
+  // arguably should only display the previous lesson
+   var divIndex = Math.round( container.scrollLeft / container.getBoundingClientRect().width ) -1
+   jumpStroke(Object.keys(namedCheckpoints)[divIndex+1])
+   if (lessonsAdded.indexOf(divIndex)>-1) return
+   lessonsAdded.push(divIndex)
+  if (!document.querySelectorAll(".lesson")[divIndex]) return
+   addLesson( document.querySelectorAll(".lesson")[divIndex].innerText )
+});
+
+</script>
+</html>
