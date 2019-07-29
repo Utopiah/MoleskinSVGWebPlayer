@@ -3,6 +3,7 @@
 Repository : [https://github.com/Utopiah/MoleskinSVGWebPlayer](https://github.com/Utopiah/MoleskinSVGWebPlayer)
 
 # todo
+- fix SVG as URL lifecycle issue, could be a race condition. If it persists can be done server side via email-to-endpoint
 - test audio example for mediasync
 - allow playing on synced (now only video driven despite being a 2-way sync)
 - properly merge editor and mediasync (both work independantly but with the same code i.e `svgplayer.js`,  could work better with events)
@@ -10,7 +11,7 @@ Repository : [https://github.com/Utopiah/MoleskinSVGWebPlayer](https://github.co
 - play bar supporting seeking (0 being first stroke, 100 last) on its own or via editor viz
 - refactor to proper web component
 - social synced [cf own 360 social player](https://glitch.com/edit/#!/localvideo-webxr-coplay), especially for presentations
-- email support to receive, parse and embbed in the player drawing directly from the device, cf e.g. [own attempts](https://glitch.com/edit/#!/email-to-endpoint)
+- email support to receive, parse and embbed in the player drawing directly from the device, cf [example](http://svg-player.glitch.me/moleskine.html?url=https://email-to-endpoint.glitch.me/svgs/e-notebook1_(June2019)_p23_20190726.svg)
 - explore zoom a la Prezi
 
 # failed experiments
