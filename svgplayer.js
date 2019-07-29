@@ -19,7 +19,6 @@ if (typeof videoAnnotation !== "undefined") videoAnnotationAvailable = true
 
 var currentUrl = new URLSearchParams(window.location.search)
 var url = currentUrl.get('url')
-console.log(url)
 if (url) document.querySelector(svgId).data = url
 
 if (document.querySelector(svgId)) document.querySelector(svgId).addEventListener("load", function() {
@@ -27,6 +26,9 @@ if (document.querySelector(svgId)) document.querySelector(svgId).addEventListene
   setupInterface()
 
   var doc = this.getSVGDocument();
+  
+  if (!doc) { console.warn('SVG missing.'); return }
+  
   if (doc.children[0].getAttribute('viewBox') && !doc.children[0].getAttribute('baseProfile')){ // Surface source
     svgparts = [...doc.children[0].children[0].children]
   } else { // Moleskine source
